@@ -681,7 +681,8 @@ function updateProfileUI() {
             <button class="sos" onclick="showModal('emergencyCallModal')">📞 LLAMAR EMERGENCIAS (123)</button>
             <button onclick="showModal('recordModal')" style="background: linear-gradient(135deg, #f39c12, #e67e22); margin-bottom: 15px;">🎥 GRABAR EVIDENCIA</button>
             <button onclick="showModal('shareLocationModal')" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); margin-bottom: 30px;">📍 COMPARTIR UBICACIÓN</button>
-            
+            <button onclick="navigateTo('sugerenciaHospitalScreen')" style="background: linear-gradient(135deg, #2980b9, #6dd5fa); color: white; font-weight: 600; margin-bottom: 15px;">🏥 HOSPITAL RECOMENDADO</button>
+
             <button class="secondary" onclick="navigateTo('enViajeScreen')">❌ CANCELAR - FUE FALSA ALARMA</button>
         </div>
 
@@ -833,6 +834,53 @@ function updateProfileUI() {
         </div>
     </div>
 </div>
+
+<!-- Pantalla Sugerencia de Hospital -->
+<div id="sugerenciaHospitalScreen" class="screen">
+    <div class="header">Sugerencia de Atención Médica</div>
+
+    <div class="logo" style="margin-top: 10px;">
+        <img src="allianz.jpg" alt="Allianz Logo" style="width: 100px; height: auto; margin-bottom: 15px;">
+        <p style="color: #7f8c8d; font-size: 0.85em;">Cobertura activa de seguro Allianz</p>
+    </div>
+
+    <div class="status-card" style="margin-bottom: 20px;">
+        <div style="font-size: 1.1em; font-weight: 600; color: #34495e; margin-bottom: 5px;">🏥 Hospital Recomendado</div>
+        <p style="font-size: 1em; color: #2c3e50; font-weight: bold;">Clínica Santa Fe de Bogotá</p>
+        <p style="font-size: 0.9em; color: #7f8c8d;">Motivo: Atención para fractura de tobillo</p>
+    </div>
+
+    <div class="map-placeholder" style="flex-direction: column; padding: 15px;">
+        <span style="font-size: 2em;">🧭</span>
+        <p style="margin-top: 10px; color: #7f8c8d; font-size: 0.9em;">Ver ruta más cercana desde tu ubicación</p>
+        <button style="margin-top: 15px;" onclick="alert('Funcionalidad de navegación en desarrollo')">📍 Ver en el mapa</button>
+    </div>
+
+    <button class="secondary" onclick="navigateTo('dashboardScreen')">⬅️ Volver al Inicio</button>
+
+    <!-- Barra de Navegación -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
+            <span class="nav-icon">🏠</span>Inicio
+        </div>
+        <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
+            <span class="nav-icon">🚗</span>Viaje
+        </div>
+        <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
+            <span class="nav-icon">🧘‍♀️</span>Bienestar
+        </div>
+        <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
+            <span class="nav-icon">🗺️</span>Mapa
+        </div>
+        <div class="nav-item active" onclick="navigateTo('sugerenciaHospitalScreen', this)">
+            <span class="nav-icon">🧑‍⚕️</span>Salud
+        </div>
+    </div>
+</div>
+
+
+
+
 
     </div> <!-- cierre de app-container -->
 
