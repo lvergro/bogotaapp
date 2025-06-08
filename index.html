@@ -1,888 +1,864 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bogotá Tranquila - Asistente para el Bienestar Urbano</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Bogotá Tranquila</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ------------------- */
+    /* Reset & Base Styles */
+    /* ------------------- */
+    :root {
+      --primary-light: #4fc3f7;
+      --primary-dark: #29b6f6;
+      --secondary-light: #aed581;
+      --secondary-dark: #9ccc65;
+      --danger-light: #ef5350;
+      --danger-dark: #d32f2f;
+      --warning: #f39c12;
+      --text-dark: #34495e;
+      --text-light: #7f8c8d;
+      --bg-main: #f0f4f8;
+      --bg-light: #ffffff;
+      --border-color: #e0f7fa;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #d1e9f9;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
+    /* ------------------- */
+    /* Main App Container  */
+    /* ------------------- */
+    .app-container {
+      width: 100%;
+      max-width: 400px;
+      height: 85vh;
+      max-height: 850px;
+      background: var(--bg-main);
+      border-radius: 30px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex; 
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+    
+    /* Screen Styling CORRECTION */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 25px 20px 80px 20px; /* Padding bottom for nav bar */
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background-color: var(--bg-main);
+      
+      /* Visibility control */
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1;
+    }
+    .screen.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 2;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            height: 700px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    /* ------------------- */
+    /* Generic Components  */
+    /* ------------------- */
+    .header {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+      color: var(--text-dark);
+    }
+    .logo-img {
+       width: 150px;
+    height: auto;
+    margin: 0 auto 12px;
+    display: block;
+	    
+    }
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 1em;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      transition: all .3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 8px rgba(41, 182, 246, 0.3);
+    }
+    .button, button {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      width: 100%;
+      margin: 8px 0;
+      box-shadow: 0 4px 15px rgba(41, 182, 246, 0.25);
+      text-transform: uppercase;
+    }
+    button:hover, .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(41, 182, 246, 0.3);
+    }
+    .button.secondary {
+      background: linear-gradient(135deg, var(--secondary-light), var(--secondary-dark));
+      box-shadow: 0 4px 15px rgba(154, 206, 101, 0.25);
+    }
+    .button.tertiary {
+      background: none;
+      border: 2px solid var(--primary-dark);
+      color: var(--primary-dark);
+      box-shadow: none;
+    }
 
-        .screen {
-            flex-grow: 1;
-            padding: 20px;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease-in-out;
-        }
+    /* ------------------- */
+    /* Navigation          */
+    /* ------------------- */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border-color);
+      z-index: 100;
+    }
+    .nav-item {
+      text-align: center;
+      color: var(--text-light);
+      font-size: .75em;
+      cursor: pointer;
+      transition: color .3s;
+      flex: 1;
+      padding: 5px 0;
+    }
+    .nav-item.active {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    .nav-icon {
+      display: block;
+      font-size: 1.6em;
+      margin-bottom: 2px;
+    }
 
-        .screen.active {
-            display: flex;
-        }
+    /* ------------------- */
+    /* Specific Screens    */
+    /* ------------------- */
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* Login Screen */
+    #loginScreen {
+      justify-content: center;
+      padding-bottom: 25px; /* No need for extra space at the bottom */
+	  background-color:white;
+    }
+    
+    /* Dashboard Screen */
+    .status-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+    .status-indicator {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .heartbeat-monitor {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(231, 76, 60, 0.08);
+      padding: 8px 15px;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+    .heartbeat-icon {
+      color: #e74c3c;
+      font-size: 1.2em;
+      margin-right: 8px;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .smart-recommendation {
+      background: var(--bg-light);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .ai-icon {
+      flex-shrink: 0;
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .quick-action-btn {
+      background: var(--bg-light);
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      padding: 16px 12px;
+      border-radius: 16px;
+      font-size: .9em;
+      font-weight: 600;
+      text-align: center;
+      transition: all .3s;
+      cursor: pointer;
+    }
+    .quick-action-btn:hover {
+      background: #e3f2fd;
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    .quick-action-btn span {
+      display: block;
+      font-size: 1.5em;
+      margin-bottom: 8px;
+    }
 
-        .header {
-            font-size: 1.8em;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: #2c3e50;
-            text-align: center;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    /* En Viaje Screen */
+    .fab-sos {
+      position: absolute;
+      bottom: 90px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--danger-light), var(--danger-dark));
+      box-shadow: 0 4px 15px rgba(239, 83, 80, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      z-index: 1000;
+      border: none;
+      font-size: 1.1em;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(239, 83, 80, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 8px 25px rgba(239, 83, 80, 0.6); }
+    }
+    .map-placeholder {
+      background: var(--bg-light);
+      border-radius: 16px;
+      margin: 20px 0;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+    .map-placeholder img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .map-placeholder p {
+      padding: 15px;
+      text-align: center;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    /* SOS Screen */
+    .sos-btn {
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 16px;
+      font-size: 1em;
+      border-radius: 16px;
+      width: 100%;
+      margin-bottom: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    .sos-btn span { font-size: 1.5em; margin-right: 15px; }
+    .sos-call { background: linear-gradient(to right, #e53935, var(--danger-dark)); }
+    .sos-record { background: linear-gradient(to right, #f57c00, #ef6c00); }
+    .sos-location { background: linear-gradient(to right, #8e24aa, #7b1fa2); }
+    .sos-hospital { background: linear-gradient(to right, var(--primary-light), var(--primary-dark)); }
+    .sos-cancel { background: #b0bec5; color: #263238; margin-top: 20px;}
 
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    /* Recursos Screen */
+    .resource-list { list-style: none; }
+    .resource-item {
+      display: flex;
+      align-items: center;
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .resource-icon { font-size: 1.5em; margin-right: 15px; }
+    .resource-item .info { flex-grow: 1; }
+    .resource-item .info strong { font-size: 1em; color: var(--text-dark); }
+    .resource-item .info small { font-size: 0.8em; color: var(--text-light); margin-top: 4px; }
+    .resource-item .actions { display: flex; align-items: center; gap: 8px; }
+    .resource-item .play-btn { background: none; border: none; font-size: 1.8em; cursor: pointer; color: var(--primary-dark); }
+    .premium-badge { background: var(--warning); color: #fff; font-size: 0.7em; padding: 3px 8px; border-radius: 8px; margin-left: 8px; }
 
-        .logo-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 2em;
-            color: white;
-        }
+    /* Perfil Screen */
+    .profile-avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #fff;
+      border: 4px solid var(--bg-light);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
-        button, .button-like {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 15px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            margin: 8px 0;
-            transition: all 0.3s ease;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            text-decoration: none;
-            display: inline-block;
-        }
+    /* ------------------- */
+    /* Chat/Asistente      */
+    /* ------------------- */
+    #chatScreen {
+      padding: 0;
+    }
+    .chat-header {
+        padding: 15px 20px;
+        background: var(--bg-light);
+        border-bottom: 1px solid var(--border-color);
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        z-index: 5;
+        flex-shrink: 0;
+    }
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      font-size: 0.95em;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .user-message {
+      background-color: var(--primary-dark);
+      color: white;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    .bot-message {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    .bot-message.typing {
+        color: var(--text-light);
+        font-style: italic;
+    }
+    .chat-input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-light);
+      align-items: center;
+      flex-shrink: 0;
+    }
+    #chatInput {
+      flex-grow: 1;
+      border-radius: 20px;
+      margin: 0;
+    }
+    .chat-button {
+        background: none;
+        border: none;
+        color: var(--primary-dark);
+        font-size: 1.5em;
+        cursor: pointer;
+        padding: 5px 10px;
+        margin: 0;
+        box-shadow: none;
+    }
+    #sendButton {
+      color: var(--primary-dark);
+    }
+    #micButton {
+        color: var(--text-light);
+    }
 
-        button:hover, .button-like:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        button.secondary {
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-        }
-
-        button.secondary:hover {
-            box-shadow: 0 8px 25px rgba(149, 165, 166, 0.4);
-        }
-
-        button.sos {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        input[type="email"], input[type="password"], input[type="text"] {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 15px;
-            font-size: 1em;
-            background: rgba(255, 255, 255, 0.8);
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-        }
-
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(102, 126, 234, 0.1);
-            margin-top: auto;
-        }
-
-        .nav-item {
-            cursor: pointer;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 0.75em;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 8px;
-            border-radius: 12px;
-            min-width: 50px;
-        }
-
-        .nav-item.active {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .nav-item:hover {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .nav-icon {
-            display: block;
-            font-size: 1.5em;
-            margin-bottom: 3px;
-        }
-
-        .dashboard-greeting {
-            font-size: 1.3em;
-            margin-bottom: 25px;
-            text-align: center;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        .status-card {
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
-            border: 2px solid rgba(46, 204, 113, 0.3);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .status-indicator {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .quick-action-btn {
-            padding: 20px 15px;
-            background: rgba(255, 255, 255, 0.8);
-            color: #2c3e50;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            font-size: 0.9em;
-            font-weight: 600;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .quick-action-btn:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: rgba(102, 126, 234, 0.4);
-        }
-
-        .fab-sos {
-            position: fixed;
-            bottom: 90px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            font-size: 1.5em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-            z-index: 100;
-        }
-
-        .trip-info {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .map-placeholder {
-            background: linear-gradient(135deg, #e9e9e9, #f5f5f5);
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            border-radius: 20px;
-            border: 2px solid rgba(102, 126, 234, 0.1);
-            color: #7f8c8d;
-            font-weight: 600;
-        }
-
-        .stress-alert {
-            background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(243, 156, 18, 0.1));
-            border: 2px solid rgba(241, 196, 15, 0.3);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .stress-level {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin: 15px 0;
-        }
-
-        .stress-moderate { color: #f39c12; }
-        .stress-low { color: #27ae60; }
-        .stress-high { color: #e74c3c; }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 25px;
-            text-align: center;
-            min-width: 280px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .breathe-circle {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            border-radius: 50%;
-            margin: 25px auto;
-            animation: breathe 4s ease-in-out infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2em;
-            font-weight: 600;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(0.8); opacity: 0.7; }
-            50% { transform: scale(1.2); opacity: 1; }
-        }
-
-        .resource-list {
-            list-style: none;
-        }
-
-        .resource-item {
-            padding: 20px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .resource-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateX(5px);
-        }
-
-        .premium-badge {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.7em;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2em;
-            font-weight: bold;
-        }
-
-        .document-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .doc-button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .heartbeat-monitor {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(231, 76, 60, 0.1);
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin: 10px 0;
-            border: 2px solid rgba(231, 76, 60, 0.3);
-        }
-
-        .heartbeat-icon {
-            color: #e74c3c;
-            font-size: 1.2em;
-            margin-right: 8px;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.3); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.3); }
-            70% { transform: scale(1); }
-        }
-
-        .smart-recommendation {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
-            border: 2px solid rgba(52, 152, 219, 0.3);
-            padding: 20px;
-            border-radius: 20px;
-            margin: 20px 0;
-        }
-
-        .recommendation-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .ai-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-    </style>
+    /* ------------------- */
+    /* MODAL STYLES        */
+    /* ------------------- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 340px;
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+    .modal-content h3 {
+        margin-bottom: 15px;
+        color: var(--text-dark);
+    }
+    .modal-content p {
+        margin-bottom: 25px;
+        color: var(--text-light);
+        line-height: 1.5;
+    }
+  </style>
 </head>
-<script>
-    function login() {
-        // Simular validación de login (puedes agregar lógica real más adelante)
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        if (email && password) {
-            // Oculta todas las pantallas
-            document.querySelectorAll(".screen").forEach(screen => {
-                screen.classList.remove("active");
-            });
-
-            // Muestra el dashboard
-            document.getElementById("dashboardScreen").classList.add("active");
-
-            // Opcional: actualizar nombre del usuario
-            const userName = email.split("@")[0];
-            document.getElementById("userName").textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
-        } else {
-            alert("Por favor ingresa tu correo y contraseña.");
-        }
-    }
-
-    function navigateTo(screenId, navItem = null) {
-        // Ocultar todas las pantallas
-        document.querySelectorAll(".screen").forEach(screen => {
-            screen.classList.remove("active");
-        });
-
-        // Mostrar la pantalla seleccionada
-        document.getElementById(screenId).classList.add("active");
-
-        // Opcional: actualizar barra de navegación
-        if (navItem) {
-            document.querySelectorAll(".nav-item").forEach(item => {
-                item.classList.remove("active");
-            });
-            navItem.classList.add("active");
-        }
-    }
-
-    function showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.add("active");
-        }
-    }
-    function logout() {
-    // Regresa al login y limpia datos temporales si es necesario
-    document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.remove("active");
-    });
-    document.getElementById("loginScreen").classList.add("active");
-}
-
-function updateProfileUI() {
-    const email = document.getElementById("email").value;
-    const username = email.split("@")[0];
-    const capitalized = username.charAt(0).toUpperCase() + username.slice(1);
-
-    document.getElementById("userName").textContent = capitalized;
-    document.getElementById("profileName").textContent = capitalized;
-    document.getElementById("profileEmail").textContent = email;
-    document.getElementById("profileAvatar").textContent = capitalized.charAt(0);
-}
-</script>
-
 <body>
 
-    <div class="app-container">
+  <!-- Main App Container -->
+  <div class="app-container">
 
-    <!-- Pantalla de Login -->
-        <div id="loginScreen" class="screen active">
-            <div class="logo">
-                <div class="logo-icon">🌟</div>
-                <div class="header">Bogotá Tranquila</div>
-                <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">Tu asistente para el bienestar urbano</p>
-            </div>
-            
-            <div class="input-group">
-                <input type="email" id="email" placeholder="Correo Electrónico" value="maria.garcia@gmail.com">
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Contraseña" value="••••••••">
-            </div>
-            
-            <button onclick="login()">INGRESAR</button>
-            <button class="secondary" onclick="showModal('registerModal')">CREAR CUENTA</button>
-            <p style="text-align:center; margin-top:20px; font-size:0.9em;">
-                <a href="#" onclick="showModal('resetModal')" style="color: #667eea; text-decoration: none;">¿Olvidaste tu contraseña?</a>
-            </p>
-        </div>
-
-        <!-- Pantalla Principal (Dashboard) -->
-        <div id="dashboardScreen" class="screen">
-            <div class="header">¡Hola, <span id="userName">María</span>!</div>
-            
-            <div class="status-card">
-                <div class="status-indicator">😌</div>
-                <div style="font-size: 1.1em; font-weight: 600; color: #27ae60;">Estado: Tranquila</div>
-                <div class="heartbeat-monitor">
-                    <span class="heartbeat-icon">💗</span>
-                    <span>72 BPM - Normal</span>
-                </div>
-            </div>
-
-            <div class="smart-recommendation">
-                <div class="recommendation-header">
-                    <div class="ai-icon">IA</div>
-                    <div>
-                        <strong>Recomendación Inteligente</strong>
-                        <div style="font-size: 0.8em; color: #7f8c8d;">Basada en tu ubicación y tráfico</div>
-                    </div>
-                </div>
-                <p style="margin-bottom: 15px;">Detectamos tráfico ligero hacia tu oficina. Es un buen momento para practicar mindfulness durante el viaje.</p>
-                <button onclick="showModal('audioModal')" style="font-size: 0.9em; padding: 10px 20px;">Escuchar Audio Relajante</button>
-            </div>
-
-            <button onclick="navigateTo('enViajeScreen')">🚗 INICIAR VIAJE SEGURO</button>
-            
-            <div class="quick-actions">
-                <button class="quick-action-btn" onclick="showModal('respiracionModal')">
-                    🫁<br>Respiración<br>Consciente
-                </button>
-                <button class="quick-action-btn" onclick="showModal('audioModal')">
-                    🎵<br>Música<br>Relajante
-                </button>
-                <button class="quick-action-btn" onclick="navigateTo('documentosScreen')">
-                    📄<br>Documentos<br>Seguros
-                </button>
-                <button class="quick-action-btn" onclick="navigateTo('estresHistorialScreen')">
-                    📊<br>Mi Bienestar<br>Mensual
-                </button>
-            </div>
-
-            <!-- Barra de Navegación -->
-            <div class="bottom-nav">
-                <div class="nav-item active" onclick="navigateTo('dashboardScreen', this)">
-                    <span class="nav-icon">🏠</span>Inicio
-                </div>
-                <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
-                    <span class="nav-icon">🚗</span>Viaje
-                </div>
-                <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
-                    <span class="nav-icon">🧘‍♀️</span>Bienestar
-                </div>
-                <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
-                    <span class="nav-icon">🗺️</span>Mapa
-                </div>
-                <div class="nav-item" onclick="navigateTo('perfilScreen', this)">
-                    <span class="nav-icon">👤</span>Perfil
-                </div>
-            </div>
-        </div>
-
-        <!-- Pantalla En Viaje -->
-        <div id="enViajeScreen" class="screen">
-            <div class="header">Viaje en Progreso</div>
-            
-            <div class="trip-info">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div><strong>Casa → Oficina</strong></div>
-                    <div style="color: #27ae60;">🟢 En ruta</div>
-                </div>
-                <div style="font-size: 0.9em; color: #7f8c8d;">
-                    <div>⏱️ Tiempo estimado: 28 min</div>
-                    <div>📍 Av. Caracas - Tráfico moderado</div>
-                </div>
-            </div>
-
-            <div class="map-placeholder">
-                🗺️ Mapa GPS Inteligente<br>
-                <small style="display: block; margin-top: 10px;">Rutas optimizadas para tu bienestar</small>
-            </div>
-
-            <div class="stress-alert">
-                <div class="heartbeat-monitor">
-                    <span class="heartbeat-icon">💗</span>
-                    <span>Nivel de estrés: <span class="stress-moderate">Moderado</span></span>
-                </div>
-                <p style="margin: 15px 0;">Tu ritmo cardíaco ha aumentado ligeramente. Te sugerimos activar el modo de relajación.</p>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="showModal('audioModal')" style="flex: 1; font-size: 0.9em;">🎵 Audio Calm</button>
-                    <button onclick="showModal('respiracionModal')" class="secondary" style="flex: 1; font-size: 0.9em;">🫁 Respirar</button>
-                </div>
-            </div>
-
-            <button onclick="showModal('finalizarViajeModal')">✅ FINALIZAR VIAJE</button>
-            
-            <button class="fab-sos sos" onclick="navigateTo('sosScreen')">SOS</button>
-
-            <!-- Barra de Navegación -->
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
-                    <span class="nav-icon">🏠</span>Inicio
-                </div>
-                <div class="nav-item active" onclick="navigateTo('enViajeScreen', this)">
-                    <span class="nav-icon">🚗</span>Viaje
-                </div>
-                <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
-                    <span class="nav-icon">🧘‍♀️</span>Bienestar
-                </div>
-                <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
-                    <span class="nav-icon">🗺️</span>Mapa
-                </div>
-                <div class="nav-item" onclick="navigateTo('perfilScreen', this)">
-                    <span class="nav-icon">👤</span>Perfil
-                </div>
-            </div>
-        </div>
-
-        <!-- Pantalla SOS -->
-        <div id="sosScreen" class="screen">
-            <div class="header" style="color: #e74c3c;">🚨 ALERTA DE EMERGENCIA</div>
-            
-            <div style="background: rgba(231, 76, 60, 0.1); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 30px; border: 2px solid rgba(231, 76, 60, 0.3);">
-                <div style="font-size: 3em; margin-bottom: 15px;">🆘</div>
-                <p style="font-size: 1.3em; font-weight: 600; margin-bottom: 10px;">¿Necesitas ayuda urgente?</p>
-                <p style="color: #7f8c8d;">Tu ubicación será compartida automáticamente</p>
-            </div>
-
-            <button class="sos" onclick="showModal('emergencyCallModal')">📞 LLAMAR EMERGENCIAS (123)</button>
-            <button onclick="showModal('recordModal')" style="background: linear-gradient(135deg, #f39c12, #e67e22); margin-bottom: 15px;">🎥 GRABAR EVIDENCIA</button>
-            <button onclick="showModal('shareLocationModal')" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); margin-bottom: 30px;">📍 COMPARTIR UBICACIÓN</button>
-            <button onclick="navigateTo('sugerenciaHospitalScreen')" style="background: linear-gradient(135deg, #2980b9, #6dd5fa); color: white; font-weight: 600; margin-bottom: 15px;">🏥 HOSPITAL RECOMENDADO</button>
-
-            <button class="secondary" onclick="navigateTo('enViajeScreen')">❌ CANCELAR - FUE FALSA ALARMA</button>
-        </div>
-
-        <!-- Pantalla Recursos de Bienestar -->
-        <div id="recursosScreen" class="screen">
-            <div class="header">Recursos de Bienestar</div>
-            
-            <div style="background: rgba(102, 126, 234, 0.1); padding: 20px; border-radius: 20px; margin-bottom: 25px; border: 2px solid rgba(102, 126, 234, 0.2);">
-                <h3 style="margin-bottom: 10px;">💡 Contenido Personalizado</h3>
-                <p style="font-size: 0.9em; color: #7f8c8d;">Basado en tu historial de estrés y preferencias</p>
-            </div>
-
-            <ul class="resource-list">
-                <li class="resource-item" onclick="showModal('meditacionModal')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>🧘‍♀️ Meditación Anti-Estrés</strong>
-                            <div style="font-size: 0.8em; color: #7f8c8d;">Sesión de 5 minutos</div>
-                        </div>
-                        <span style="color: #27ae60;">▶️</span>
-                    </div>
-                </li>
-                <li class="resource-item" onclick="showModal('respiracionModal')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>🫁 Ejercicios de Respiración</strong>
-                            <div style="font-size: 0.8em; color: #7f8c8d;">Técnicas de relajación</div>
-                        </div>
-                        <span style="color: #27ae60;">▶️</span>
-                    </div>
-                </li>
-                <li class="resource-item" onclick="showModal('premiumModal')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>📚 Manejo del Ruido Urbano</strong>
-                            <span class="premium-badge">Premium</span>
-                            <div style="font-size: 0.8em; color: #7f8c8d;">Dr. Ana Rodríguez - Psicóloga</div>
-                        </div>
-                        <span style="color: #f39c12;">⭐</span>
-                    </div>
-                </li>
-                <li class="resource-item" onclick="showModal('premiumModal')">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong>🎵 Playlist: Tranquilidad</strong>
-                            <span class="premium-badge">Premium</span>
-                            <div style="font-size: 0.8em; color: #7f8c8d;">Música binaural para el estrés</div>
-                        </div>
-                        <span style="color: #f39c12;">⭐</span>
-                    </div>
-                </li>
-            </ul>
-
-            <!-- Barra de Navegación -->
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
-                    <span class="nav-icon">🏠</span>Inicio
-                </div>
-                <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
-                    <span class="nav-icon">🚗</span>Viaje
-                </div>
-                <div class="nav-item active" onclick="navigateTo('recursosScreen', this)">
-                    <span class="nav-icon">🧘‍♀️</span>Bienestar
-                </div>
-                <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
-                    <span class="nav-icon">🗺️</span>Mapa
-                </div>
-                <div class="nav-item" onclick="navigateTo('perfilScreen', this)">
-                    <span class="nav-icon">👤</span>Perfil
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pantalla Mapa de Estrés -->
-        <div id="mapaEstresScreen" class="screen">
-            <div class="header">Mapa de Estrés Urbano</div>
-            
-            <div style="background: rgba(102, 126, 234, 0.1); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 2px solid rgba(102, 126, 234, 0.2);">
-                <h3 style="margin-bottom: 10px;">📊 Inteligencia Colectiva</h3>
-                <p style="font-size: 0.9em; color: #7f8c8d;">Datos anónimos de +50,000 usuarios bogotanos</p>
-            </div>
-
-            <div class="map-placeholder" style="height: auto; padding: 15px; flex-direction: column;">
-    <img src="mapa.png" alt="Mapa de Calor de Bogotá" style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-    <p style="text-align: center; color: #34495e; font-weight: 600; margin-top: 15px;"> Bogotá</p>
-</div>
-
-
-            <!-- Barra de Navegación -->
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
-                    <span class="nav-icon">🏠</span>Inicio
-                </div>
-                <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
-                    <span class="nav-icon">🚗</span>Viaje
-                </div>
-                <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
-                    <span class="nav-icon">🧘‍♀️</span>Bienestar
-                </div>
-                <div class="nav-item active" onclick="navigateTo('mapaEstresScreen', this)">
-                    <span class="nav-icon">🗺️</span>Mapa
-                </div>
-                <div class="nav-item" onclick="navigateTo('perfilScreen', this)">
-                    <span class="nav-icon">👤</span>Perfil
-                </div>
-            </div>
-        </div>
-<!-- Pantalla Perfil -->
-<div id="perfilScreen" class="screen">
-    <div class="header">Mi Perfil</div>
-
-    <div class="profile-avatar" id="profileAvatar">
-        M
+    <!-- Screen: Login -->
+    <div id="loginScreen" class="screen">
+      <img src="logo-bogota-tranquila.png" alt="Logo Bogotá Tranquila" class="logo-img">
+      <div class="header">Bogotá Tranquila</div>
+      <p style="text-align:center;color:var(--text-light);margin:-10px 0 30px;">Asistente para el Bienestar Urbano</p>
+      <input type="email" id="email" placeholder="Correo Electrónico" value="usuario@email.com">
+      <input type="password" id="password" placeholder="Contraseña" value="••••••••">
+      <button onclick="login()">INGRESAR</button>
+      <button class="button secondary" onclick="showModal('En Desarrollo', 'La funcionalidad de crear cuenta estará disponible próximamente.')">CREAR CUENTA</button>
+      <p style="text-align:center;font-size:.9em;margin-top:20px;"><a href="#" onclick="showModal('Restablecer Contraseña', 'Se ha enviado un enlace para restablecer tu contraseña a tu correo electrónico.')" style="color:var(--primary-dark);text-decoration:none;">¿Olvidaste tu contraseña?</a></p>
     </div>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h3 id="profileName" style="margin-bottom: 5px;">María</h3>
-        <p id="profileEmail" style="font-size: 0.9em; color: #7f8c8d;">maria.garcia@gmail.com</p>
-    </div>
-
-    <div class="status-card" style="margin-bottom: 30px;">
-        <div class="status-indicator">🧘‍♀️</div>
-        <div style="font-size: 1.1em; font-weight: 600; color: #27ae60;">Estado Emocional: Equilibrada</div>
+    <!-- Screen: Dashboard -->
+    <div id="dashboardScreen" class="screen">
+      <div class="header" style="text-align: left;">¡Hola, <span id="userName">Usuario</span>!</div>
+      <div class="status-card">
+        <div class="status-indicator">😌</div>
+        <div style="font-size: 1.1em; font-weight: 600; color: #27ae60;">Estado: Tranquilo</div>
         <div class="heartbeat-monitor">
-            <span class="heartbeat-icon">💗</span>
-            <span>72 BPM - Última lectura</span>
+          <span class="heartbeat-icon">❤️</span>
+          <span>72 BPM - Normal</span>
+        </div>
+      </div>
+      
+      <div class="smart-recommendation">
+        <div class="ai-icon">IA</div>
+        <div>
+          <strong style="color: var(--text-dark);">Sugerencia del día</strong>
+          <div style="font-size: 0.9em; color: var(--text-light); margin-top: 4px;">Detectamos tráfico ligero en tu ruta habitual. Es un buen momento para un viaje sin estrés.</div>
+        </div>
+      </div>
+      <button class="button tertiary" onclick="navigateTo('chatScreen')">💬 HABLAR CON EL ASISTENTE</button>
+      <button onclick="navigateTo('enViajeScreen')">🚗 INICIAR VIAJE SEGURO</button>
+      <div class="quick-actions">
+        <button class="quick-action-btn" onclick="showModal('Respiración Guiada', 'Iniciando ejercicio de respiración de 2 minutos para calmar la mente.')"><span>🫁</span>Respiración</button>
+        <button class="quick-action-btn" onclick="showModal('Música Relajante', 'Reproduciendo tu playlist de música para la concentración.')"><span>🎵</span>Música</button>
+        <button class="quick-action-btn" onclick="navigateTo('recursosScreen')"><span>📚</span>Recursos</button>
+        <button class="quick-action-btn" onclick="showModal('En Desarrollo', 'Tu historial de bienestar estará disponible pronto.')"><span>📊</span>Historial</button>
+      </div>
+    </div>
+
+    <!-- Screen: En Viaje -->
+    <div id="enViajeScreen" class="screen">
+      <div class="header">Viaje en Progreso</div>
+      <div class="status-card" style="margin-bottom:20px; text-align: left;">
+        <strong style="font-size: 1.2em;">Casa → Oficina</strong>
+        <p style="font-size:0.9em; color:var(--text-light); margin-top: 8px;">
+          <span style="color: #27ae60; font-weight:600;">En ruta</span><br>
+          ⏱️ Tiempo estimado: 28 min<br>
+          📍 Av. Caracas – Tráfico moderado
+        </p>
+      </div>
+      <div class="map-placeholder">
+        <img src="https://placehold.co/600x400/EFEFEF/333333?text=Mapa+GPS+Inteligente" alt="Mapa de la ruta">
+        <p>Rutas optimizadas para tu bienestar</p>
+      </div>
+      <button onclick="showModal('Finalizar Viaje', '¡Buen viaje! Hemos guardado los datos de tu recorrido.')">✅ FINALIZAR VIAJE</button>
+      <button class="fab-sos" onclick="navigateTo('sosScreen')">SOS</button>
+    </div>
+
+    <!-- Screen: SOS -->
+    <div id="sosScreen" class="screen">
+      <div class="header" style="color:var(--danger-light);">🚨 Alerta de Emergencia</div>
+      <div style="background:rgba(239,83,80,0.1);padding:20px;border-radius:16px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:3em;margin-bottom:12px;">🆘</div>
+        <p style="font-size:1.1em;font-weight:600;margin-bottom:8px;color:var(--text-dark);">¿Necesitas ayuda urgente?</p>
+        <p style="font-size:0.9em;color:var(--text-light);">Tu ubicación y datos serán compartidos con los servicios de emergencia y tus contactos de confianza.</p>
+      </div>
+      <button class="sos-btn sos-call" onclick="showModal('Llamando...', 'Conectando con la línea de emergencias 123.')"><span>📞</span>LLAMAR EMERGENCIAS (123)</button>
+      <button class="sos-btn sos-record" onclick="showModal('Grabando...', 'Iniciando grabación de audio y video. Los archivos se guardarán de forma segura.')"><span>🎥</span>GRABAR EVIDENCIA</button>
+      <button class="sos-btn sos-location" onclick="showModal('Ubicación Compartida', 'Tu ubicación en tiempo real ha sido enviada a tus contactos de emergencia.')"><span>📍</span>COMPARTIR UBICACIÓN</button>
+      <button class="sos-btn sos-hospital" onclick="navigateTo('sugerenciaHospitalScreen')"><span>🏥</span>HOSPITAL RECOMENDADO</button>
+      <button class="sos-btn sos-cancel" onclick="navigateTo('dashboardScreen')"><span>❌</span>CANCELAR</button>
+    </div>
+
+    <!-- Screen: Sugerencia Hospital -->
+    <div id="sugerenciaHospitalScreen" class="screen">
+        <div class="header">Sugerencia de Atención</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://placehold.co/120x60/00338d/ffffff?text=Allianz" alt="Logo Aseguradora" style="border-radius: 8px;">
+            <p style="color: var(--text-light); font-size: 0.85em; margin-top: 10px;">Cobertura de seguro activa</p>
+        </div>
+        <div class="status-card" style="text-align: left;">
+            <p style="color: var(--text-light); font-size: 0.9em;">Hospital Recomendado</p>
+            <h3 style="margin: 5px 0; color: var(--text-dark); font-size: 1.3em;">Clínica Santa Fe de Bogotá</h3>
+            <p style="color: var(--text-light); font-size: 0.9em;">Motivo: Centro de trauma más cercano.</p>
+        </div>
+        <div class="map-placeholder">
+            <img src="https://placehold.co/400x200/e8e8e8/aaaaaa?text=Ruta+al+Hospital" alt="Mapa al hospital">
+        </div>
+        <button onclick="showModal('Navegación Iniciada', 'Mostrando la ruta más rápida a la Clínica Santa Fe en tu aplicación de mapas.')">📍 VER EN EL MAPA</button>
+        <button class="button secondary" onclick="navigateTo('dashboardScreen')">⬅️ VOLVER AL INICIO</button>
+    </div>
+
+    <!-- Screen: Recursos de Bienestar -->
+    <div id="recursosScreen" class="screen">
+      <div class="header">Centro de Bienestar</div>
+      <ul class="resource-list">
+        <li class="resource-item">
+          <span class="resource-icon">🧘‍♀️</span>
+          <div class="info">
+            <strong>Meditación Anti-Estrés</strong>
+            <small>Guía de 5 minutos para calmar la mente</small>
+          </div>
+          <div class="actions">
+            <button class="play-btn" onclick="showModal('Reproduciendo', 'Meditación Anti-Estrés')">▶️</button>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">🫁</span>
+          <div class="info">
+            <strong>Respiración 4-7-8</strong>
+            <small>Técnica para reducir la ansiedad</small>
+          </div>
+          <div class="actions">
+            <button class="play-btn" onclick="showModal('Reproduciendo', 'Ejercicio de Respiración 4-7-8')">▶️</button>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">🎧</span>
+          <div class="info">
+            <strong>Sonidos de la Naturaleza</strong>
+            <small>Playlist para concentración y calma</small>
+          </div>
+          <div class="actions">
+            <button class="play-btn" onclick="showModal('Reproduciendo', 'Playlist de Sonidos de la Naturaleza')">▶️</button>
+          </div>
+        </li>
+        <li class="resource-item">
+          <span class="resource-icon">📚</span>
+          <div class="info">
+            <strong>Artículo: Manejo del Ruido</strong>
+            <small>Por: Dr. Ana Rodríguez</small>
+          </div>
+          <div class="actions">
+             <span class="premium-badge">Premium</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Screen: Asistente de Chat -->
+    <div id="chatScreen" class="screen">
+        <div class="chat-header">Asistente Virtual</div>
+        <div class="chat-messages" id="chatMessages">
+             <div class="chat-message bot-message">
+                ¡Hola! Soy tu asistente de bienestar. ¿Cómo te sientes hoy o en qué puedo ayudarte?
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeydown="if(event.key==='Enter') sendMessage()">
+            <button id="micButton" class="chat-button" onclick="showModal('Función de Voz', 'La entrada por micrófono estará disponible pronto.')">🎤</button>
+            <button id="sendButton" class="chat-button" onclick="sendMessage()">➤</button>
         </div>
     </div>
 
-    <button onclick="alert('Funcionalidad en desarrollo')">✏️ Editar Perfil</button>
-    <button class="secondary" onclick="logout()">🚪 Cerrar Sesión</button>
-
-    <!-- Barra de Navegación -->
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
-            <span class="nav-icon">🏠</span>Inicio
-        </div>
-        <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
-            <span class="nav-icon">🚗</span>Viaje
-        </div>
-        <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
-            <span class="nav-icon">🧘‍♀️</span>Bienestar
-        </div>
-        <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
-            <span class="nav-icon">🗺️</span>Mapa
-        </div>
-        <div class="nav-item active" onclick="navigateTo('perfilScreen', this)">
-            <span class="nav-icon">👤</span>Perfil
-        </div>
-    </div>
-</div>
-
-<!-- Pantalla Sugerencia de Hospital -->
-<div id="sugerenciaHospitalScreen" class="screen">
-    <div class="header">Sugerencia de Atención Médica</div>
-
-    <div class="logo" style="margin-top: 10px;">
-        <img src="allianz.jpg" alt="Allianz Logo" style="width: 100px; height: auto; margin-bottom: 15px;">
-        <p style="color: #7f8c8d; font-size: 0.85em;">Cobertura activa de seguro Allianz</p>
+    <!-- Screen: Perfil -->
+    <div id="perfilScreen" class="screen">
+      <div class="header">Mi Perfil</div>
+      <div class="profile-avatar" id="profileAvatar">U</div>
+      <div style="text-align:center; margin-bottom:25px;">
+        <h3 id="profileName" style="margin-bottom:5px;">Usuario</h3>
+        <p id="profileEmail" style="font-size:0.9em; color:var(--text-light);">usuario@email.com</p>
+      </div>
+      <button onclick="showModal('En Desarrollo', 'La edición de perfil estará disponible pronto.')">✏️ EDITAR PERFIL</button>
+      <button onclick="showModal('En Desarrollo', 'La configuración de notificaciones estará disponible pronto.')">🔔 NOTIFICACIONES</button>
+      <button class="button secondary" onclick="logout()">🚪 CERRAR SESIÓN</button>
     </div>
 
-    <div class="status-card" style="margin-bottom: 20px;">
-        <div style="font-size: 1.1em; font-weight: 600; color: #34495e; margin-bottom: 5px;">🏥 Hospital Recomendado</div>
-        <p style="font-size: 1em; color: #2c3e50; font-weight: bold;">Clínica Santa Fe de Bogotá</p>
-        <p style="font-size: 0.9em; color: #7f8c8d;">Motivo: Atención para fractura de tobillo</p>
+    <!-- Navegación Inferior -->
+    <div class="bottom-nav" id="bottomNav">
+      <div class="nav-item active" data-screen="dashboardScreen" onclick="navigateTo('dashboardScreen', this)"><span class="nav-icon">🏠</span>Inicio</div>
+      <div class="nav-item" data-screen="enViajeScreen" onclick="navigateTo('enViajeScreen', this)"><span class="nav-icon">🚗</span>Viaje</div>
+      <div class="nav-item" data-screen="chatScreen" onclick="navigateTo('chatScreen', this)"><span class="nav-icon">💬</span>Asistente</div>
+      <div class="nav-item" data-screen="recursosScreen" onclick="navigateTo('recursosScreen', this)"><span class="nav-icon">🧘</span>Bienestar</div>
+      <div class="nav-item" data-screen="perfilScreen" onclick="navigateTo('perfilScreen', this)"><span class="nav-icon">👤</span>Perfil</div>
+    </div>
+      
+    <!-- Contenedor del Modal -->
+    <div id="appModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle">Título del Modal</h3>
+            <p id="modalMessage">Este es un mensaje de ejemplo.</p>
+            <button onclick="closeModal()">Aceptar</button>
+        </div>
     </div>
 
-    <div class="map-placeholder" style="flex-direction: column; padding: 15px;">
-        <span style="font-size: 2em;">🧭</span>
-        <p style="margin-top: 10px; color: #7f8c8d; font-size: 0.9em;">Ver ruta más cercana desde tu ubicación</p>
-        <button style="margin-top: 15px;" onclick="alert('Funcionalidad de navegación en desarrollo')">📍 Ver en el mapa</button>
-    </div>
+  </div>
 
-    <button class="secondary" onclick="navigateTo('dashboardScreen')">⬅️ Volver al Inicio</button>
+  <script>
+    // --- State Management & UI Update ---
+    const state = {
+        currentUser: null,
+        activeScreen: 'loginScreen'
+    };
+    
+    // --- Navigation ---
+    function navigateTo(screenId, navItem = null) {
+        const bottomNav = document.getElementById('bottomNav');
+        
+        // Hide or show nav based on the screen
+        if (screenId === 'loginScreen') {
+            bottomNav.style.display = 'none';
+        } else {
+            bottomNav.style.display = 'flex';
+        }
 
-    <!-- Barra de Navegación -->
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="navigateTo('dashboardScreen', this)">
-            <span class="nav-icon">🏠</span>Inicio
-        </div>
-        <div class="nav-item" onclick="navigateTo('enViajeScreen', this)">
-            <span class="nav-icon">🚗</span>Viaje
-        </div>
-        <div class="nav-item" onclick="navigateTo('recursosScreen', this)">
-            <span class="nav-icon">🧘‍♀️</span>Bienestar
-        </div>
-        <div class="nav-item" onclick="navigateTo('mapaEstresScreen', this)">
-            <span class="nav-icon">🗺️</span>Mapa
-        </div>
-        <div class="nav-item active" onclick="navigateTo('sugerenciaHospitalScreen', this)">
-            <span class="nav-icon">🧑‍⚕️</span>Salud
-        </div>
-    </div>
-</div>
+        // Switch screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+            state.activeScreen = screenId;
+        }
 
+        // Update nav item active state
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        let activeNavItem = navItem;
+        if (!activeNavItem) {
+             activeNavItem = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
+        }
+        
+        // Handle special navigation cases
+        if (screenId === 'sosScreen' || screenId === 'sugerenciaHospitalScreen') {
+             const viajeNavItem = document.querySelector('.nav-item[data-screen="enViajeScreen"]');
+             if(viajeNavItem) viajeNavItem.classList.add('active');
+        } else if (activeNavItem) {
+            activeNavItem.classList.add('active');
+        }
+    }
 
+    // --- User Authentication ---
+    function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        if (email && password) {
+            state.currentUser = { email: email };
+            updateProfileUI(email);
+            navigateTo('dashboardScreen', document.querySelector('.nav-item[data-screen="dashboardScreen"]'));
+        } else {
+            showModal('Error de Inicio de Sesión', 'Por favor, ingresa tu correo y contraseña para continuar.');
+        }
+    }
 
+    function logout() {
+        state.currentUser = null;
+        navigateTo('loginScreen');
+        // Clear user info from UI
+        document.getElementById('email').value = "usuario@email.com";
+        document.getElementById('password').value = "••••••••";
+    }
 
+    function updateProfileUI(email) {
+        const name = email.split('@')[0].replace(/[\.\_]/g, ' ');
+        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+        document.getElementById('userName').textContent = capitalizedName;
+        document.getElementById('profileName').textContent = capitalizedName;
+        document.getElementById('profileEmail').textContent = email;
+        document.getElementById('profileAvatar').textContent = capitalizedName.charAt(0);
+    }
+    
+    // --- Modal System ---
+    const modal = document.getElementById('appModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
 
-    </div> <!-- cierre de app-container -->
+    function showModal(title, message) {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modal.classList.add('active');
+    }
 
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    // --- Chat Assistant Logic ---
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+
+    function sendMessage() {
+        const messageText = chatInput.value.trim();
+        if (messageText === '') return;
+
+        appendMessage(messageText, 'user');
+        chatInput.value = '';
+
+        setTimeout(() => {
+            showTypingIndicator();
+            setTimeout(() => {
+                removeTypingIndicator();
+                const botResponse = getBotResponse(messageText);
+                appendMessage(botResponse, 'bot');
+            }, 1200 + Math.random() * 500);
+        }, 300);
+    }
+
+    function appendMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', `${type}-message`);
+        messageDiv.textContent = text;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll
+    }
+    
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.classList.add('chat-message', 'bot-message', 'typing');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.textContent = 'Escribiendo...';
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+    
+    function getBotResponse(userInput) {
+        const lcInput = userInput.toLowerCase();
+        if (lcInput.includes('estrés') || lcInput.includes('estresado') || lcInput.includes('ansiedad')) {
+            return "Entiendo que te sientas así. A veces, tomarse un momento para una respiración profunda puede ayudar mucho. ¿Te gustaría que te guíe en un ejercicio de respiración?";
+        } else if (lcInput.includes('tráfico') || lcInput.includes('trancón')) {
+            return "El tráfico en Bogotá puede ser abrumador. Recuerda que tu seguridad y calma son lo más importante. ¿Has probado escuchar algo de música relajante? Puedo sugerirte una playlist desde la sección de Bienestar.";
+        } else if (lcInput.includes('gracias')) {
+            return "¡De nada! Estoy aquí para ayudarte a tener un día más tranquilo. ¿Hay algo más que pueda hacer por ti?";
+        } else if (lcInput.includes('hola') || lcInput.includes('buenos dias')) {
+            return "¡Hola! Qué bueno hablar contigo. ¿En qué te puedo ayudar para mejorar tu bienestar hoy?";
+        } else {
+            return "Gracias por compartir eso conmigo. Estoy aquí para escucharte. Recuerda que en la sección de 'Bienestar' tienes recursos que podrían ayudarte a sentirte mejor.";
+        }
+    }
+
+    // Close modal if user clicks on the overlay
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Initial setup
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set the initial state correctly
+        navigateTo('loginScreen');
+    });
+  </script>
 </body>
 </html>
