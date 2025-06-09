@@ -523,6 +523,86 @@
         color: var(--text-light);
     }
 
+
+/* === PRIVACY MANAGEMENT STYLES (NUEVO) ======= */
+    .privacy-management-section {
+        background: var(--bg-light);
+        border-radius: 16px;
+        padding: 5px 20px 20px 20px;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+    }
+    .privacy-management-section h4 {
+        text-align: center;
+        padding: 15px 0;
+        font-size: 1.1em;
+    }
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .setting-item:last-of-type { /* Use last-of-type for better targeting */
+        border-bottom: none;
+    }
+    .setting-item .info {
+        flex-grow: 1;
+        text-align: left;
+        margin-right: 15px;
+    }
+    .setting-item strong {
+        font-size: 0.95em;
+        color: var(--text-dark);
+    }
+    .setting-item small {
+        font-size: 0.8em;
+        color: var(--text-light);
+        display: block;
+        margin-top: 3px;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: var(--secondary-dark);
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
     /* ------------------- */
     /* MODAL STYLES        */
     /* ------------------- */
@@ -755,21 +835,47 @@
         </div>
     </div>
 
-    <div id="perfilScreen" class="screen">
+   <div id="perfilScreen" class="screen">
       <div class="header">Mi Perfil</div>
       <div class="profile-avatar" id="profileAvatar">U</div>
-      <div style="text-align:center; margin-bottom:25px;">
+      <div style="text-align:center; margin-bottom:10px;">
         <h3 id="profileName" style="margin-bottom:5px;">Usuario</h3>
         <p id="profileEmail" style="font-size:0.9em; color:var(--text-light);">usuario@email.com</p>
       </div>
-      <button onclick="showModal('En Desarrollo', 'La edición de perfil estará disponible pronto.')">✏️ EDITAR PERFIL</button>
-      <button onclick="showModal('En Desarrollo', 'La configuración de notificaciones estará disponible pronto.')">🔔 NOTIFICACIONES</button>
-      <button class="button secondary" onclick="logout()">🚪 CERRAR SESIÓN</button>
+      
+      <div class="privacy-management-section">
+          <h4>Gestión de Privacidad</h4>
+          <div class="setting-item">
+              <div class="info">
+                  <strong>Permitir ubicación</strong>
+                  <small>Para optimizar rutas y el mapa de estrés.</small>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-item">
+              <div class="info">
+                  <strong>Datos de salud (sensores)</strong>
+                  <small>Para la detección de estrés en tiempo real.</small>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="setting-item">
+              <div class="info">
+                  <strong>Análisis anónimo de IA</strong>
+                  <small>Permitir que tus conversaciones anónimas mejoren el asistente.</small>
+              </div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="slider"></span></label>
+          </div>
+      </div>
+      
+      <button class="button tertiary" style="margin-top:15px; font-size:0.9em;" onclick="showModal('Solicitud de Datos', 'Tu solicitud ha sido recibida. Recibirás un correo con tus datos en las próximas 48 horas.')">Solicitar mis Datos (Portabilidad)</button>
+      <button class="button danger" style="font-size:0.9em;" onclick="showModal('Eliminar Cuenta', 'Tu solicitud de eliminación ha sido procesada. Tus datos serán eliminados de forma permanente.')">Eliminar mi Cuenta y Datos</button>
+      
+      <button class="button secondary" onclick="logout()" style="margin-top:15px;">🚪 CERRAR SESIÓN</button>
     </div>
 
     <div class="bottom-nav" id="bottomNav">
       <div class="nav-item active" data-screen="dashboardScreen" onclick="navigateTo('dashboardScreen', this)"><span class="nav-icon">🏠</span>Inicio</div>
-      <div class="nav-item" data-screen="enViajeScreen" onclick="navigateTo('enViajeScreen', this)"><span class="nav-icon">🚗</span>Viaje</div>
       <div class="nav-item" data-screen="chatScreen" onclick="navigateTo('chatScreen', this)"><span class="nav-icon">💬</span>Asistente</div>
       <div class="nav-item" data-screen="recursosScreen" onclick="navigateTo('recursosScreen', this)"><span class="nav-icon">🧘</span>Bienestar</div>
       <div class="nav-item" data-screen="perfilScreen" onclick="navigateTo('perfilScreen', this)"><span class="nav-icon">👤</span>Perfil</div>
@@ -1005,6 +1111,54 @@
             return "¡Hola! Qué bueno hablar contigo. ¿En qué te puedo ayudar para mejorar tu bienestar hoy?";
         } else {
             return "Gracias por compartir eso conmigo. Estoy aquí para escucharte. Recuerda que en la sección de 'Bienestar' tienes recursos que podrían ayudarte a sentirte mejor.";
+        }
+    }
+	
+	
+	
+    function updateProfileUI(email) {
+        state.currentUser = { email };
+        const name = email.split('@')[0].replace(/[\.\_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        document.getElementById('userName').textContent = name;
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profileEmail').textContent = email;
+        document.getElementById('profileAvatar').textContent = name.charAt(0);
+    }
+
+    // --- Legal, Onboarding & Chat Logic ---
+    function showLegal(type) {
+        const content = {
+            terms: { 
+                title: 'Términos y Condiciones', 
+                body: '<h3>1. Aceptación de los Términos</h3><p>Al crear una cuenta y utilizar la aplicación "Bogotá Tranquila", usted acepta y se compromete a cumplir con los presentes Términos y Condiciones. Si no está de acuerdo, no debe utilizar la aplicación.</p><h3>2. Uso del Servicio</h3><p>El servicio está destinado a mayores de 18 años. Las sugerencias de bienestar proporcionadas por la IA no constituyen un consejo médico profesional.</p>' 
+            },
+            privacy: { 
+                title: 'Política de Privacidad', 
+                body: `<p>En "Bogotá Tranquila", su confianza es nuestra prioridad. Esta política detalla cómo manejamos sus datos, en cumplimiento con la <strong>Ley 1581 de 2012 de Colombia</strong>.</p><h3>1. Datos que Recopilamos</h3><p>Recopilamos: datos de registro, ubicación, datos de sensores (con su permiso explícito), y conversaciones con el asistente.</p><h3>2. Uso y Anonimización de Datos</h3><p>Sus datos se utilizan para personalizar su experiencia y para entrenar nuestros modelos de IA de forma <strong>totalmente anónima y agregada</strong>, garantizando su privacidad.</p>` 
+            }
+        };
+        document.getElementById('legalTitle').textContent = content[type].title;
+        document.getElementById('legalContent').innerHTML = content[type].body;
+        navigateTo('legalScreen');
+    }
+
+    function showOnboardingSlide(step) {
+        document.querySelectorAll('.onboarding-slide').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+        
+        document.getElementById(`onboarding-slide-${step}`)?.classList.add('active');
+        document.getElementById(`dot-${step}`)?.classList.add('active');
+    }
+
+    function onboardingNext() {
+        state.onboardingStep++;
+        if (state.onboardingStep > 3) {
+            navigateTo('dashboardScreen', document.querySelector('.nav-item[data-screen="dashboardScreen"]'));
+            return;
+        }
+        showOnboardingSlide(state.onboardingStep);
+        if (state.onboardingStep === 3) {
+            document.getElementById('onboardingNextBtn').textContent = "FINALIZAR";
         }
     }
 
