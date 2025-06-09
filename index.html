@@ -58,7 +58,7 @@
       position: relative;
     }
     
-    /* Screen Styling CORRECTION */
+    /* Screen Styling */
     .screen {
       position: absolute;
       top: 0;
@@ -66,28 +66,20 @@
       width: 100%;
       height: 100%;
       padding: 25px 20px 80px 20px; /* Padding bottom for nav bar */
-      display: flex;
+      display: none; /* Changed from flex to none */
       flex-direction: column;
       overflow-y: auto;
       background-color: var(--bg-main);
-      
-      /* Visibility control */
-      opacity: 0;
-      visibility: hidden;
       transition: opacity 0.3s ease-in-out;
       z-index: 1;
     }
     .screen.active {
+      display: flex; /* Use flex to show */
       opacity: 1;
       visibility: visible;
       z-index: 2;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
     /* ------------------- */
     /* Generic Components  */
     /* ------------------- */
@@ -100,12 +92,11 @@
     }
     .logo-img {
        width: 150px;
-    height: auto;
-    margin: 0 auto 12px;
-    display: block;
-	    
+        height: auto;
+        margin: 0 auto 12px;
+        display: block;
     }
-    input {
+    input[type="email"], input[type="password"], input[type="text"], input[type="date"] {
       width: 100%;
       padding: 15px;
       border: 1px solid var(--border-color);
@@ -136,6 +127,11 @@
       box-shadow: 0 4px 15px rgba(41, 182, 246, 0.25);
       text-transform: uppercase;
     }
+    button:disabled {
+        background: #bdc3c7;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
     button:hover, .button:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(41, 182, 246, 0.3);
@@ -149,6 +145,28 @@
       border: 2px solid var(--primary-dark);
       color: var(--primary-dark);
       box-shadow: none;
+    }
+
+    /* --- Checkbox styles for T&C --- */
+    .consent-group {
+        text-align: left;
+        margin: 10px 0 20px 0;
+        font-size: 0.9em;
+        color: var(--text-dark);
+    }
+    .consent-group label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .consent-group input[type="checkbox"] {
+        width: auto;
+        margin: 0 10px 0 0;
+    }
+    .consent-group a {
+        color: var(--primary-dark);
+        text-decoration: none;
+        font-weight: 600;
     }
 
     /* ------------------- */
@@ -191,11 +209,55 @@
     /* ------------------- */
 
     /* Login Screen */
-    #loginScreen {
+    #loginScreen, #registerScreen {
       justify-content: center;
-      padding-bottom: 25px; /* No need for extra space at the bottom */
+      padding-bottom: 25px;
 	  background-color:white;
     }
+    #loginScreen .header, #registerScreen .header {
+        margin-top: auto; /* Push content to center */
+    }
+    #loginScreen > *, #registerScreen > * {
+        flex-shrink: 0;
+    }
+    #loginScreen .button, #registerScreen .button {
+        margin-bottom: auto; /* Push buttons down */
+    }
+
+    /* Legal Screen (T&C, Privacy) */
+    #legalScreen .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+    }
+    #legalScreen .back-button {
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        color: var(--text-dark);
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+        width: auto;
+        box-shadow: none;
+    }
+    #legalScreen h2 {
+        font-size: 1.2em;
+        text-align: center;
+        flex-grow: 1;
+    }
+    #legalScreen .legal-content {
+        font-size: 0.9em;
+        line-height: 1.6;
+        color: var(--text-light);
+    }
+     #legalScreen .legal-content h3 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: var(--text-dark);
+     }
     
     /* Dashboard Screen */
     .status-card {
@@ -508,22 +570,53 @@
 </head>
 <body>
 
-  <!-- Main App Container -->
   <div class="app-container">
 
-    <!-- Screen: Login -->
-    <div id="loginScreen" class="screen">
+    <div id="loginScreen" class="screen active">
       <img src="logo-bogota-tranquila.png" alt="Logo Bogotá Tranquila" class="logo-img">
       <div class="header">Bogotá Tranquila</div>
       <p style="text-align:center;color:var(--text-light);margin:-10px 0 30px;">Asistente para el Bienestar Urbano</p>
       <input type="email" id="email" placeholder="Correo Electrónico" value="usuario@email.com">
       <input type="password" id="password" placeholder="Contraseña" value="••••••••">
       <button onclick="login()">INGRESAR</button>
-      <button class="button secondary" onclick="showModal('En Desarrollo', 'La funcionalidad de crear cuenta estará disponible próximamente.')">CREAR CUENTA</button>
+      <button class="button secondary" onclick="navigateTo('registerScreen')">CREAR CUENTA</button>
       <p style="text-align:center;font-size:.9em;margin-top:20px;"><a href="#" onclick="showModal('Restablecer Contraseña', 'Se ha enviado un enlace para restablecer tu contraseña a tu correo electrónico.')" style="color:var(--primary-dark);text-decoration:none;">¿Olvidaste tu contraseña?</a></p>
     </div>
 
-    <!-- Screen: Dashboard -->
+    <div id="registerScreen" class="screen">
+        <div class="header">Crear Cuenta</div>
+        <p style="text-align:center;color:var(--text-light);margin:-10px 0 30px;">Regístrate para comenzar a mejorar tu bienestar.</p>
+        <input type="email" id="registerEmail" placeholder="Correo Electrónico">
+        <input type="password" id="registerPassword" placeholder="Crear Contraseña">
+        
+        <label for="birthdate" style="font-size:0.9em; color:var(--text-light); text-align:left; width:100%; margin-bottom:5px;">Fecha de Nacimiento</label>
+        <input type="date" id="birthdate">
+
+        <div class="consent-group">
+            <label>
+                <input type="checkbox" id="acceptTerms">
+                <span>He leído y acepto los <a href="#" onclick="showLegal('terms')">Términos y Condiciones</a>.</span>
+            </label>
+            <label>
+                <input type="checkbox" id="acceptPrivacy">
+                <span>Comprendo y acepto la <a href="#" onclick="showLegal('privacy')">Política de Privacidad y Manejo de Datos</a>.</span>
+            </label>
+        </div>
+
+        <button onclick="createAccount()">CREAR CUENTA</button>
+        <button class="button tertiary" onclick="navigateTo('loginScreen')">YA TENGO CUENTA</button>
+    </div>
+
+    <div id="legalScreen" class="screen">
+        <div class="header-container">
+            <button class="back-button" onclick="navigateTo('registerScreen')">←</button>
+            <h2 id="legalTitle"></h2>
+        </div>
+        <div class="legal-content" id="legalContent">
+            </div>
+    </div>
+
+
     <div id="dashboardScreen" class="screen">
       <div class="header" style="text-align: left;">¡Hola, <span id="userName">Usuario</span>!</div>
       <div class="status-card">
@@ -552,7 +645,6 @@
       </div>
     </div>
 
-    <!-- Screen: En Viaje -->
     <div id="enViajeScreen" class="screen">
       <div class="header">Viaje en Progreso</div>
       <div class="status-card" style="margin-bottom:20px; text-align: left;">
@@ -571,7 +663,6 @@
       <button class="fab-sos" onclick="navigateTo('sosScreen')">SOS</button>
     </div>
 
-    <!-- Screen: SOS -->
     <div id="sosScreen" class="screen">
       <div class="header" style="color:var(--danger-light);">🚨 Alerta de Emergencia</div>
       <div style="background:rgba(239,83,80,0.1);padding:20px;border-radius:16px;text-align:center;margin-bottom:24px;">
@@ -586,7 +677,6 @@
       <button class="sos-btn sos-cancel" onclick="navigateTo('dashboardScreen')"><span>❌</span>CANCELAR</button>
     </div>
 
-    <!-- Screen: Sugerencia Hospital -->
     <div id="sugerenciaHospitalScreen" class="screen">
         <div class="header">Sugerencia de Atención</div>
         <div style="text-align: center; margin-bottom: 20px;">
@@ -605,7 +695,6 @@
         <button class="button secondary" onclick="navigateTo('dashboardScreen')">⬅️ VOLVER AL INICIO</button>
     </div>
 
-    <!-- Screen: Recursos de Bienestar -->
     <div id="recursosScreen" class="screen">
       <div class="header">Centro de Bienestar</div>
       <ul class="resource-list">
@@ -652,7 +741,6 @@
       </ul>
     </div>
     
-    <!-- Screen: Asistente de Chat -->
     <div id="chatScreen" class="screen">
         <div class="chat-header">Asistente Virtual</div>
         <div class="chat-messages" id="chatMessages">
@@ -667,7 +755,6 @@
         </div>
     </div>
 
-    <!-- Screen: Perfil -->
     <div id="perfilScreen" class="screen">
       <div class="header">Mi Perfil</div>
       <div class="profile-avatar" id="profileAvatar">U</div>
@@ -680,7 +767,6 @@
       <button class="button secondary" onclick="logout()">🚪 CERRAR SESIÓN</button>
     </div>
 
-    <!-- Navegación Inferior -->
     <div class="bottom-nav" id="bottomNav">
       <div class="nav-item active" data-screen="dashboardScreen" onclick="navigateTo('dashboardScreen', this)"><span class="nav-icon">🏠</span>Inicio</div>
       <div class="nav-item" data-screen="enViajeScreen" onclick="navigateTo('enViajeScreen', this)"><span class="nav-icon">🚗</span>Viaje</div>
@@ -689,7 +775,6 @@
       <div class="nav-item" data-screen="perfilScreen" onclick="navigateTo('perfilScreen', this)"><span class="nav-icon">👤</span>Perfil</div>
     </div>
       
-    <!-- Contenedor del Modal -->
     <div id="appModal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="modalTitle">Título del Modal</h3>
@@ -704,7 +789,8 @@
     // --- State Management & UI Update ---
     const state = {
         currentUser: null,
-        activeScreen: 'loginScreen'
+        activeScreen: 'loginScreen',
+        previousScreen: null
     };
     
     // --- Navigation ---
@@ -712,13 +798,16 @@
         const bottomNav = document.getElementById('bottomNav');
         
         // Hide or show nav based on the screen
-        if (screenId === 'loginScreen') {
+        if (screenId === 'loginScreen' || screenId === 'registerScreen' || screenId === 'legalScreen') {
             bottomNav.style.display = 'none';
         } else {
             bottomNav.style.display = 'flex';
         }
 
         // Switch screens
+        if(state.activeScreen !== screenId) {
+            state.previousScreen = state.activeScreen;
+        }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         const targetScreen = document.getElementById(screenId);
         if (targetScreen) {
@@ -733,7 +822,6 @@
              activeNavItem = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
         }
         
-        // Handle special navigation cases
         if (screenId === 'sosScreen' || screenId === 'sugerenciaHospitalScreen') {
              const viajeNavItem = document.querySelector('.nav-item[data-screen="enViajeScreen"]');
              if(viajeNavItem) viajeNavItem.classList.add('active');
@@ -753,6 +841,79 @@
         } else {
             showModal('Error de Inicio de Sesión', 'Por favor, ingresa tu correo y contraseña para continuar.');
         }
+    }
+
+    // ==========================================================
+    // === Lógica para la nueva pantalla de registro y T&C ======
+    // ==========================================================
+    function createAccount() {
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const birthdate = document.getElementById('birthdate').value;
+        const acceptTerms = document.getElementById('acceptTerms').checked;
+        const acceptPrivacy = document.getElementById('acceptPrivacy').checked;
+
+        // Validation
+        if (!email || !password || !birthdate) {
+            showModal('Campos Incompletos', 'Por favor, rellena todos los campos para crear tu cuenta.');
+            return;
+        }
+
+        const age = new Date().getFullYear() - new Date(birthdate).getFullYear();
+        const m = new Date().getMonth() - new Date(birthdate).getMonth();
+        if (m < 0 || (m === 0 && new Date().getDate() < new Date(birthdate).getDate())) {
+            age--;
+        }
+
+        if (age < 18) {
+            showModal('Verificación de Edad', 'Debes ser mayor de 18 años para utilizar esta aplicación.');
+            return;
+        }
+
+        if (!acceptTerms || !acceptPrivacy) {
+            showModal('Consentimiento Requerido', 'Debes aceptar los Términos y Condiciones y la Política de Privacidad para continuar.');
+            return;
+        }
+
+        // --- Simulación de creación de cuenta ---
+        console.log('Cuenta creada para:', email);
+        state.currentUser = { email: email };
+        updateProfileUI(email);
+        navigateTo('dashboardScreen', document.querySelector('.nav-item[data-screen="dashboardScreen"]'));
+    }
+
+    function showLegal(type) {
+        const legalTitle = document.getElementById('legalTitle');
+        const legalContent = document.getElementById('legalContent');
+        let titleText = '';
+        let contentHTML = '';
+
+        if (type === 'terms') {
+            titleText = 'Términos y Condiciones';
+            contentHTML = `
+                <h3>1. Aceptación de los Términos</h3>
+                <p>Al crear una cuenta y utilizar la aplicación "Bogotá Tranquila", usted acepta y se compromete a cumplir con los presentes Términos y Condiciones. Si no está de acuerdo, no debe utilizar la aplicación.</p>
+                <h3>2. Uso del Servicio</h3>
+                <p>El servicio está destinado a mayores de 18 años. Usted se compromete a no utilizar la aplicación para fines ilegales. Las sugerencias de bienestar proporcionadas por la IA no constituyen un consejo médico profesional.</p>
+                <h3>3. Propiedad Intelectual</h3>
+                <p>Todo el contenido de la aplicación es propiedad de los desarrolladores del proyecto.</p>
+            `;
+        } else if (type === 'privacy') {
+            titleText = 'Política de Privacidad';
+            contentHTML = `
+                <p>En "Bogotá Tranquila", su confianza es nuestra prioridad. Esta política detalla cómo manejamos sus datos, en cumplimiento con la <strong>Ley 1581 de 2012 de Colombia</strong>.</p>
+                <h3>1. Datos que Recopilamos</h3>
+                <p>Para ofrecer un servicio personalizado, recopilamos: (a) Datos de registro (correo, fecha de nacimiento), (b) Datos de uso y ubicación durante los viajes, (c) Datos de sensores (con su permiso explícito), y (d) Conversaciones con el asistente.</p>
+                <h3>2. Uso de la Información</h3>
+                <p>Sus datos se utilizan para: personalizar su experiencia, potenciar las respuestas del asistente de IA, y generar el mapa de estrés urbano. <strong>Su bienestar es el único objetivo.</strong></p>
+                <h3>3. Anonimización y Entrenamiento de IA</h3>
+                <p>Para mejorar nuestros modelos de IA (detección de estrés y análisis de patrones), utilizamos sus datos de conversación y de sensores de forma <strong>totalmente anónima y agregada</strong>. Se elimina cualquier información que pueda identificarle, garantizando su privacidad absoluta en los análisis.</p>
+            `;
+        }
+        
+        legalTitle.textContent = titleText;
+        legalContent.innerHTML = contentHTML;
+        navigateTo('legalScreen');
     }
 
     function logout() {
@@ -856,7 +1017,6 @@
 
     // Initial setup
     document.addEventListener('DOMContentLoaded', () => {
-        // Set the initial state correctly
         navigateTo('loginScreen');
     });
   </script>
